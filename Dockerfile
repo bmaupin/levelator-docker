@@ -1,4 +1,4 @@
-FROM ubuntu:14.04
+FROM ubuntu:18.04
 
 ENV levelator_version=Levelator-1.3.0-Python2.5
 # This is where the levelator binary will reside
@@ -10,9 +10,9 @@ WORKDIR ${installdir}
 # Install dependencies
 # No need to do any cleanup after running these commands (https://github.com/rocker-org/rocker/issues/35#issuecomment-58944297)
 RUN dpkg --add-architecture i386 && \
-    apt install -y software-properties-common && \
-    apt-add-repository -y ppa:fkrull/deadsnakes && \
     apt update && \
+    apt install -y software-properties-common && \
+    apt-add-repository -y ppa:deadsnakes/ppa && \
     apt install -y coreutils \
         curl \
         libc6:i386 \
@@ -27,7 +27,7 @@ RUN dpkg --add-architecture i386 && \
 
 # Download and extract Levelator
 RUN curl -LOs http://web.archive.org/web/20071010101022if_/http://cdn.conversationsnetwork.org/${levelator_version}.tar.bz2 && \
-    tar -xvf ${levelator_version}.tar.bz2 --strip-components 1 && \
+    tar -xf ${levelator_version}.tar.bz2 --strip-components 1 && \
     rm ${levelator_version}.tar.bz2 && \
     chmod +x levelator
 

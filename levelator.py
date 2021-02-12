@@ -8,6 +8,9 @@ import sys
 if len(sys.argv) != 3:
     sys.exit('Please provide input and output files as parameters')
 
+# Override sys.platform, which has the kernel version hardcoded
+sys.platform = 'linux2'
+
 # Hide noise from proj import
 with open(os.devnull,'wb') as null:
     sys.stdout = null

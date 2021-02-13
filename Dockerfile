@@ -1,9 +1,10 @@
 FROM ubuntu:18.04
 
-ENV levelator_version=Levelator-1.3.0-Python2.5
-# This is where the levelator binary will reside
+ENV levelator_version=1.3.0-Python2.5
+# This is where the levelator binaries will reside
 ENV installdir=/opt/levelator
 ENV PATH="${installdir}:${PATH}"
+ENV PYTHONPATH="${installdir}/.levelator/levelator.zip"
 
 WORKDIR ${installdir}
 
@@ -26,25 +27,23 @@ RUN dpkg --add-architecture i386 && \
         python2.5
 
 # Download and extract Levelator
-RUN curl -LOs http://web.archive.org/web/20071010101022if_/http://cdn.conversationsnetwork.org/${levelator_version}.tar.bz2 && \
-    tar -xf ${levelator_version}.tar.bz2 --strip-components 1 && \
-    rm ${levelator_version}.tar.bz2 && \
-    chmod +x levelator
+RUN curl -LOs http://web.archive.org/web/20071010101022if_/http://cdn.conversationsnetwork.org/Levelator-${levelator_version}.tar.bz2 && \
+    tar -xf Levelator-${levelator_version}.tar.bz2 --strip-components 1 && \
+    rm Levelator-${levelator_version}.tar.bz2
 
-# Install Python wrapper script
-COPY levelator.py .levelator/levelator.py
+# Install wrapper scripts
+COPY levelator.sh .
+COPY levelator.py .levelator/.
 
 RUN \
     # Make wxPython import not fail
     mkdir .levelator/wx && \
     touch .levelator/wx/__init__.py && \
-    # Update the shell wrapper script so it can be run from anywhere
-    sed -i.bak 's/^cd.*/#/' levelator && \
-    sed -i 's_export PYTHONPATH=levelator.zip_export PYTHONPATH='$(pwd)'/.levelator/levelator.zip_' levelator && \
-    # Point to the Python wrapper script and pass the full paths of input/output files
-    sed -i 's_python main.py_python2.5 '$(pwd)'/.levelator/levelator.py $(readlink -f "$1") $(readlink -f "$2")_' levelator
+    # Update shell wrapper script
+    sed -i 's@INSTALLDIR@'${installdir}'@' levelator.sh && \
+    chmod +x levelator.sh
 
-ENTRYPOINT ["levelator"]
+ENTRYPOINT ["levelator.sh"]
 
-# Use a different working directory for input/output files to keep them separate from levelator binaries
+# Use a different working directory for input/output files; using the same directory would overwrite the binaries when mounting it as a volume
 WORKDIR /levelator

@@ -1,1 +1,9 @@
+# Test files
+*.wav
+
+# Downloaded binaries
+level
 Levelator*
+
+# docker-slim report
+slim.report.json

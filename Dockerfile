@@ -1,5 +1,4 @@
-# Using a 32-bit image takes up less space as opposed to a 64-bit image with 32-bit libraries
-FROM i386/ubuntu
+FROM ubuntu:18.04
 
 ARG levelator_version=1.3.0-Python2.5
 
@@ -10,7 +9,8 @@ COPY levelator.sh /usr/local/bin/levelator
 
 # Install dependencies
 # No need to do any cleanup after running these commands (https://github.com/rocker-org/rocker/issues/35#issuecomment-58944297)
-RUN apt update && \
+RUN dpkg --add-architecture i386 && \
+    apt update && \
     apt install -y \
         libsndfile1:i386 \
         libstdc++6:i386

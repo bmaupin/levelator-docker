@@ -2,7 +2,7 @@ Container image for [The Levelator](http://www.conversationsnetwork.org/%20level
 
 #### Usage
 
-This image has been published to Docker Hub at [https://hub.docker.com/r/bmaupin/levelator](https://hub.docker.com/r/bmaupin/levelator)
+This image has been published to [GitHub Container Registry](https://github.com/bmaupin/levelator-docker/pkgs/container/levelator) and [Docker Hub](https://hub.docker.com/r/bmaupin/levelator)
 
 To use it:
 
@@ -11,7 +11,7 @@ To use it:
 1. Run levelator
 
    ```
-   docker run --rm --user $(id -u):$(id -g) -v "$PWD:/levelator" bmaupin/levelator input.wav output.wav
+   docker run --rm --user $(id -u):$(id -g) -v "$PWD:/levelator" ghcr.io/bmaupin/levelator input.wav output.wav
    ```
 
    (Replace `input.wav` and `output.wav` with the names of the input/output files)
@@ -36,6 +36,19 @@ docker build -t levelator .
 
    Since `levelator.sh` is in the Dockerfile entrypoint, it gets run, allowing `docker-slim` to detect everything used by the container and make sure it gets included in the final image
 
+1. Tag and push to GitHub Container Registry
+
+   1. [Authenticate to GHCR](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry#authenticating-with-a-personal-access-token-classic)
+
+   1. Then
+
+      ```
+      docker tag levelator.slim ghcr.io/bmaupin/levelator:slim
+      docker push ghcr.io/bmaupin/levelator:slim
+      docker tag levelator.slim ghcr.io/bmaupin/levelator
+      docker push ghcr.io/bmaupin/levelator
+      ```
+
 1. Tag and push to Docker Hub
 
    ```
@@ -50,5 +63,5 @@ docker build -t levelator .
 After `docker-slim` has been run, the final container doesn't have `ls`. You can use this to see the file contents of the container image:
 
 ```
-docker run --name levelator bmaupin/levelator 2> /dev/null; docker export levelator | tar t; docker container rm levelator &> /dev/null
+docker run --name levelator ghcr.io/bmaupin/levelator 2> /dev/null; docker export levelator | tar t; docker container rm levelator &> /dev/null
 ```
